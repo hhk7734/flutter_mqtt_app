@@ -37,4 +37,6 @@ class MqttRepository {
         return false;
     }
   }
+
+  disconnect() => client.disconnect();
 }
