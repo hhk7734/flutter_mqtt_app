@@ -24,11 +24,21 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
   ) async* {
     if (event is RemoteControlValueUpdated) {
       yield* _mapRemoteControlValueUpdatedToState(event);
+    } else if (event is RemoteControlValueSeted) {
+      yield* _mapRemoteControlValueSetedToState(event);
     }
   }
 
   Stream<RemoteControlState> _mapRemoteControlValueUpdatedToState(
       RemoteControlValueUpdated event) async* {
     yield RemoteControlValueUpdateSuccess(values: event.values);
+  }
+
+  Stream<RemoteControlState> _mapRemoteControlValueSetedToState(
+      RemoteControlValueSeted event) async* {
+    _mqttRepository.publish(
+      topic: 'set',
+      payload: {event.index: event.nextValue}.toString(),
+    );
   }
 }

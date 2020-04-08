@@ -7,8 +7,23 @@ abstract class RemoteControlEvent extends Equatable {
 class RemoteControlValueUpdated extends RemoteControlEvent {
   final List<dynamic> values;
 
-  const RemoteControlValueUpdated({this.values});
+  const RemoteControlValueUpdated({@required this.values});
 
   @override
   List<Object> get props => [values];
+}
+
+class RemoteControlValueSeted extends RemoteControlEvent {
+  final List<dynamic> currentValues;
+  final int index;
+  final dynamic nextValue;
+
+  const RemoteControlValueSeted({
+    @required this.currentValues,
+    @required this.index,
+    @required this.nextValue,
+  });
+
+  @override
+  List<Object> get props => [currentValues, index, nextValue];
 }
