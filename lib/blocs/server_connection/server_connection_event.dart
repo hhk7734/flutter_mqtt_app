@@ -6,9 +6,13 @@ abstract class ServerConnectionEvent extends Equatable {
 
 class ServerConnectionConnected extends ServerConnectionEvent {
   final String server;
+  final ServerConnectionConnectedNextState state;
 
-  const ServerConnectionConnected({@required this.server});
+  const ServerConnectionConnected({
+    @required this.server,
+    this.state = ServerConnectionConnectedNextState.inProgress,
+  });
 
   @override
-  List<Object> get props => [server];
+  List<Object> get props => [server, state];
 }
