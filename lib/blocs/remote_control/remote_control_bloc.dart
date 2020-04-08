@@ -22,6 +22,13 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
   Stream<RemoteControlState> mapEventToState(
     RemoteControlEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is RemoteControlValueUpdated) {
+      yield* _mapRemoteControlValueUpdatedToState(event);
+    }
+  }
+
+  Stream<RemoteControlState> _mapRemoteControlValueUpdatedToState(
+      RemoteControlValueUpdated event) async* {
+    yield RemoteControlValueUpdateSuccess(values: event.values);
   }
 }
