@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -26,6 +27,8 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
       yield* _mapRemoteControlValueUpdatedToState(event);
     } else if (event is RemoteControlValueSeted) {
       yield* _mapRemoteControlValueSetedToState(event);
+    } else if (event is RemoteControlValueGeted) {
+      yield* _mapRemoteControlValueGetedToState(event);
     }
   }
 
@@ -39,6 +42,19 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
     _mqttRepository.publish(
       topic: 'set',
       payload: {event.index: event.nextValue}.toString(),
+    );
+  }
+
+  Stream<RemoteControlState> _mapRemoteControlValueGetedToState(
+      RemoteControlValueGeted event) async* {
+    _mqttRepository.subscribe(topic: event.topic).then(
+      (stream) {
+        stream.listen(
+          (values) {
+            add(RemoteControlValueUpdated(values: jsonDecode(values)));
+          },
+        );
+      },
     );
   }
 }

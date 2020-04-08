@@ -27,3 +27,12 @@ class RemoteControlValueSeted extends RemoteControlEvent {
   @override
   List<Object> get props => [currentValues, index, nextValue];
 }
+
+class RemoteControlValueGeted extends RemoteControlEvent {
+  final String topic;
+
+  const RemoteControlValueGeted({@required this.topic});
+
+  @override
+  List<Object> get props => [topic];
+}
