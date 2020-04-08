@@ -88,6 +88,21 @@ class MqttRepository {
     return _subscriptionStream[topic];
   }
 
+  bool publish(
+      {String topic, String payload, MqttQos mqttQos = MqttQos.atMostOnce}) {
+    switch (mqttConnectionState) {
+      case MqttConnectionState.connected:
+        final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
+        builder.addString(payload);
+        client.publishMessage(topic, mqttQos, builder.payload);
+        return true;
+        break;
+      default:
+        return false;
+        break;
+    }
+  }
+
   set attachOnSubscribed(SubscribeCallback callback) {
     client.onSubscribed = (String topic) {
       _onSubscribed(topic);
