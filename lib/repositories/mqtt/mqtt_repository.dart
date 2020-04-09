@@ -95,13 +95,17 @@ class MqttRepository {
     }
   }
 
-  bool publish(
-      {String topic, String payload, MqttQos mqttQos = MqttQos.atMostOnce}) {
+  bool publish({
+    String topic,
+    String payload,
+    MqttQos mqttQos = MqttQos.atMostOnce,
+    bool retain = false,
+  }) {
     switch (mqttConnectionState) {
       case MqttConnectionState.connected:
         final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
         builder.addString(payload);
-        client.publishMessage(topic, mqttQos, builder.payload);
+        client.publishMessage(topic, mqttQos, builder.payload, retain: retain);
         return true;
         break;
       default:
