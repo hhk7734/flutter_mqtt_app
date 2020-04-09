@@ -50,7 +50,7 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
       RemoteControlValueSeted event) async* {
     _mqttRepository.publish(
       topic: 'set',
-      payload: {event.index: event.nextValue}.toString(),
+      payload: jsonEncode({event.index.toString(): event.nextValue}),
     );
   }
 
