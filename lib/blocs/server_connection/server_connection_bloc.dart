@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 import '../../repositories/mqtt/mqtt_repository.dart';
 
@@ -16,7 +17,17 @@ class ServerConnectionBloc
   final MqttRepository _mqttRepository;
 
   ServerConnectionBloc({@required MqttRepository mqttRepository})
-      : _mqttRepository = mqttRepository;
+      : _mqttRepository = mqttRepository {
+    _mqttRepository.unsolicitedlyDisconnectCallback.putIfAbsent(
+      'serverConnectionBloc',
+      () => () {
+        if (_mqttRepository.mqttConnectReturnCode ==
+            MqttConnectReturnCode.unsolicited) {
+          add(ServerConnectionUnsolicitedlyDisconnected());
+        }
+      },
+    );
+  }
 
   @override
   ServerConnectionState get initialState => ServerConnectionInitial();
@@ -27,6 +38,8 @@ class ServerConnectionBloc
   ) async* {
     if (event is ServerConnectionConnected) {
       yield* _mapServerConnectionConnectedToState(event);
+    } else if (event is ServerConnectionUnsolicitedlyDisconnected) {
+      yield* _mapServerConnectionUnsolicitedlyDisconnectedToState();
     }
   }
 
@@ -56,5 +69,17 @@ class ServerConnectionBloc
         yield ServerConnectionConnectFailure();
         break;
     }
+  }
+
+  Stream<ServerConnectionState>
+      _mapServerConnectionUnsolicitedlyDisconnectedToState() async* {
+    yield ServerConnectionUnsolicitedlyDisconnectSuccess();
+  }
+
+  @override
+  Future<void> close() {
+    _mqttRepository.unsolicitedlyDisconnectCallback
+        .remove('serverConnectionBloc');
+    return super.close();
   }
 }

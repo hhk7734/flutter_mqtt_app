@@ -23,3 +23,9 @@ class ServerConnectionConnectFailure extends ServerConnectionState {
   @override
   List<Object> get props => [];
 }
+
+class ServerConnectionUnsolicitedlyDisconnectSuccess
+    extends ServerConnectionState {
+  @override
+  List<Object> get props => [];
+}

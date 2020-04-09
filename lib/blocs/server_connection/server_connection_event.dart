@@ -16,3 +16,8 @@ class ServerConnectionConnected extends ServerConnectionEvent {
   @override
   List<Object> get props => [server, state];
 }
+
+class ServerConnectionUnsolicitedlyDisconnected extends ServerConnectionEvent {
+  @override
+  List<Object> get props => [];
+}
