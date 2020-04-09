@@ -8,6 +8,8 @@ class MqttRepository {
       Map<String, Completer<bool>>();
   final Map<String, Stream<String>> _subscriptionStream =
       Map<String, Stream<String>>();
+  final Map<String, DisconnectCallback> unsolicitedlyDisconnectCallback =
+      Map<String, DisconnectCallback>();
 
   MqttRepository(
       {String server,
@@ -16,11 +18,15 @@ class MqttRepository {
       : client = MqttServerClient.withPort(server, clientIdentifier, port) {
     client.logging(on: false);
     client.keepAlivePeriod = 60;
+    client.onConnected = _onConnected;
+    client.onDisconnected = _onDisconnected;
     client.onSubscribed = _onSubscribed;
     client.onSubscribeFail = _onSubscribeFail;
   }
 
   get mqttConnectionState => client.connectionStatus.state;
+
+  get mqttConnectReturnCode => client.connectionStatus.returnCode;
 
   Future<bool> connect() async {
     assert(client.server != null);
@@ -115,6 +121,26 @@ class MqttRepository {
       _onSubscribeFail(topic);
       callback(topic);
     };
+  }
+
+  _onConnected() {
+    print('MqttRepository: connected');
+  }
+
+  _onDisconnected() {
+    print('MqttRepository: disconnected: $mqttConnectReturnCode');
+    _subscriptionStream.clear();
+    switch (mqttConnectReturnCode) {
+      case MqttConnectReturnCode.unsolicited:
+        unsolicitedlyDisconnectCallback.forEach(
+          (key, callback) {
+            callback();
+          },
+        );
+        break;
+      default:
+        break;
+    }
   }
 
   _onSubscribed(String topic) {
