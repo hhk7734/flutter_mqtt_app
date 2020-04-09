@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../blocs/server_connection/server_connection_bloc.dart';
 import '../../repositories/mqtt/mqtt_repository.dart';
+
+import '../../blocs/server_connection/server_connection_bloc.dart';
 
 class ServerConnectionScreen extends StatefulWidget {
   static const String id = 'server_connection';
@@ -27,13 +28,15 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
             ServerConnectionBloc(mqttRepository: widget._mqttRepository),
         child: BlocBuilder<ServerConnectionBloc, ServerConnectionState>(
           builder: (context, state) {
-            print(state);
             if (state is ServerConnectionConnectInProgress) {
               return Text('InProgress');
             } else if (state is ServerConnectionConnectSuccess) {
               return Text('Success');
             } else if (state is ServerConnectionConnectFailure) {
               return Text('Failure');
+            } else if (state
+                is ServerConnectionUnsolicitedlyDisconnectSuccess) {
+              return Text('Unsolicitedly Disconnect');
             } else {
               return Text('Initial');
             }
