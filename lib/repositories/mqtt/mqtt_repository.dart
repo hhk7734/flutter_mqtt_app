@@ -57,41 +57,42 @@ class MqttRepository {
       {String topic, MqttQos mqttQos = MqttQos.atMostOnce}) async {
     switch (mqttConnectionState) {
       case MqttConnectionState.connected:
-        client.subscribe(topic, mqttQos);
-        _subscriptionState.putIfAbsent(topic, () => Completer.sync());
-        bool isSuccess = await _subscriptionState[topic].future;
-        _subscriptionState.remove(topic);
-        if (isSuccess) {
-          Stream<String> stream = MqttClientTopicFilter(topic, client.updates)
-              .updates
-              .transform<String>(StreamTransformer<
-                  List<MqttReceivedMessage<MqttMessage>>, String>.fromHandlers(
-                handleData: (data, sink) {
-                  final MqttPublishMessage recMess = data[0].payload;
-                  final pt = MqttPublishPayload.bytesToStringAsString(
-                      recMess.payload.message);
-                  sink.add(pt);
-                },
-                handleError: (error, stackTrace, sink) =>
-                    sink.addError(error, stackTrace),
-                handleDone: (sink) => sink.close(),
-              ))
-              .asBroadcastStream();
+        if (!_subscriptionStream.containsKey(topic)) {
+          client.subscribe(topic, mqttQos);
+          _subscriptionState.putIfAbsent(topic, () => Completer.sync());
+          bool isSuccess = await _subscriptionState[topic].future;
+          _subscriptionState.remove(topic);
 
-          _subscriptionStream.putIfAbsent(topic, () => stream);
-          return getSubscriptionStream(topic: topic);
-        } else {
-          return null;
+          if (isSuccess) {
+            Stream<String> stream = MqttClientTopicFilter(topic, client.updates)
+                .updates
+                .transform<String>(StreamTransformer<
+                    List<MqttReceivedMessage<MqttMessage>>,
+                    String>.fromHandlers(
+                  handleData: (data, sink) {
+                    final MqttPublishMessage recMess = data[0].payload;
+                    final pt = MqttPublishPayload.bytesToStringAsString(
+                        recMess.payload.message);
+                    sink.add(pt);
+                  },
+                  handleError: (error, stackTrace, sink) =>
+                      sink.addError(error, stackTrace),
+                  handleDone: (sink) => sink.close(),
+                ))
+                .asBroadcastStream();
+
+            _subscriptionStream.putIfAbsent(topic, () => stream);
+          } else {
+            return null;
+          }
         }
+
+        return _subscriptionStream[topic];
         break;
       default:
         return null;
         break;
     }
-  }
-
-  Stream<String> getSubscriptionStream({String topic}) {
-    return _subscriptionStream[topic];
   }
 
   bool publish(
