@@ -17,3 +17,8 @@ class RemoteControlValueUpdateSuccess extends RemoteControlState {
   @override
   List<Object> get props => [values];
 }
+
+class RemoteControlUnsolicitedlyDisconnectSuccess extends RemoteControlState {
+  @override
+  List<Object> get props => [];
+}

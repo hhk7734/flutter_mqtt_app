@@ -14,7 +14,14 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
   final MqttRepository _mqttRepository;
 
   RemoteControlBloc({@required MqttRepository mqttRepository})
-      : _mqttRepository = mqttRepository;
+      : _mqttRepository = mqttRepository {
+    _mqttRepository.unsolicitedlyDisconnectCallback.putIfAbsent(
+      'remoteControlBloc',
+      () => () {
+        add(RemoteControlUnsolicitedlyDisconnected());
+      },
+    );
+  }
 
   @override
   RemoteControlState get initialState => RemoteControlInitial();
@@ -29,6 +36,8 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
       yield* _mapRemoteControlValueSetedToState(event);
     } else if (event is RemoteControlValueGeted) {
       yield* _mapRemoteControlValueGetedToState(event);
+    } else if (event is RemoteControlUnsolicitedlyDisconnected) {
+      yield* _mapRemoteControlUnsolicitedlyDisconnectedToState();
     }
   }
 
@@ -56,5 +65,16 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
         );
       },
     );
+  }
+
+  Stream<RemoteControlState>
+      _mapRemoteControlUnsolicitedlyDisconnectedToState() async* {
+    yield RemoteControlUnsolicitedlyDisconnectSuccess();
+  }
+
+  @override
+  Future<void> close() {
+    _mqttRepository.unsolicitedlyDisconnectCallback.remove('remoteControlBloc');
+    return super.close();
   }
 }

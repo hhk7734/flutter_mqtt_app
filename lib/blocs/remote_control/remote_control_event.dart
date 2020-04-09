@@ -36,3 +36,8 @@ class RemoteControlValueGeted extends RemoteControlEvent {
   @override
   List<Object> get props => [topic];
 }
+
+class RemoteControlUnsolicitedlyDisconnected extends RemoteControlEvent {
+  @override
+  List<Object> get props => [];
+}
