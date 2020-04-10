@@ -74,7 +74,7 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
 
   @override
   Future<void> close() {
-    _mqttRepository.unsolicitedlyDisconnectCallback.remove('remoteControlBloc');
+    print('ReomteControlBloc: close');
     return super.close();
   }
 }
