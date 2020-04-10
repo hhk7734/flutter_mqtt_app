@@ -27,6 +27,8 @@ class ServerConnectionBloc
   ) async* {
     if (event is ServerConnectionConnected) {
       yield* _mapServerConnectionConnectedToState(event);
+    } else if (event is ServerConnectionDisconnected) {
+      yield* _mapServerConnectionDisconnectedToState();
     }
   }
 
@@ -57,6 +59,11 @@ class ServerConnectionBloc
         yield ServerConnectionConnectFailure();
         break;
     }
+  }
+
+  Stream<ServerConnectionState>
+      _mapServerConnectionDisconnectedToState() async* {
+    _mqttRepository.disconnect();
   }
 
   @override

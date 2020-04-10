@@ -18,3 +18,8 @@ class ServerConnectionConnected extends ServerConnectionEvent {
   @override
   List<Object> get props => [server, clientIdentifier, state];
 }
+
+class ServerConnectionDisconnected extends ServerConnectionEvent {
+  @override
+  List<Object> get props => [];
+}
