@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 
 import '../../repositories/mqtt/mqtt_repository.dart';
 
@@ -49,14 +50,19 @@ class RemoteControlBloc extends Bloc<RemoteControlEvent, RemoteControlState> {
   Stream<RemoteControlState> _mapRemoteControlValueSetedToState(
       RemoteControlValueSeted event) async* {
     _mqttRepository.publish(
-      topic: 'set',
-      payload: jsonEncode({event.index.toString(): event.nextValue}),
-    );
+        topic: 'set',
+        payload: jsonEncode({event.index.toString(): event.nextValue}),
+        mqttQos: MqttQos.atLeastOnce);
   }
 
   Stream<RemoteControlState> _mapRemoteControlValueGetedToState(
       RemoteControlValueGeted event) async* {
-    _mqttRepository.subscribe(topic: event.topic).then(
+    _mqttRepository
+        .subscribe(
+      topic: event.topic,
+      mqttQos: MqttQos.atLeastOnce,
+    )
+        .then(
       (stream) {
         stream.listen(
           (values) {
