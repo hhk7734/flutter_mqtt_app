@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../blocs/server_connection/server_connection_bloc.dart';
 import '../../repositories/mqtt/mqtt_repository.dart';
 
-import '../../blocs/server_connection/server_connection_bloc.dart';
+import '../../screens/remote_control/remote_control_screen.dart';
 
 class ServerConnectionScreen extends StatefulWidget {
   static const String id = 'server_connection';
@@ -17,26 +20,46 @@ class ServerConnectionScreen extends StatefulWidget {
 }
 
 class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
+  ServerConnectionBloc _bloc;
   @override
   Widget build(BuildContext context) {
+    _bloc = ServerConnectionBloc(mqttRepository: widget._mqttRepository);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Sever connection'),
       ),
       body: BlocProvider(
-        create: (context) =>
-            ServerConnectionBloc(mqttRepository: widget._mqttRepository),
+        create: (context) => _bloc,
         child: BlocBuilder<ServerConnectionBloc, ServerConnectionState>(
-          builder: (context, state) {
-            if (state is ServerConnectionConnectInProgress) {
-              return Text('InProgress');
-            } else if (state is ServerConnectionConnectSuccess) {
-              return Text('Success');
-            } else if (state is ServerConnectionConnectFailure) {
-              return Text('Failure');
+          condition: (previous, current) {
+            if (current is ServerConnectionConnectInProgress) {
+              return false;
+            } else if (current is ServerConnectionConnectSuccess) {
+              Navigator.of(context).pushNamed(RemoteControlScreen.id).then(
+                (value) {
+                  _bloc.add(ServerConnectionDisconnected());
+                },
+              );
+              return false;
+            } else if (current is ServerConnectionConnectFailure) {
+              return false;
             } else {
-              return Text('Initial');
+              return true;
             }
+          },
+          builder: (context, state) {
+            return Center(
+              child: RaisedButton(
+                child: Text('test button to connect sever'),
+                onPressed: () {
+                  _bloc.add(ServerConnectionConnected(
+                    server: '192.168.11.11',
+                    clientIdentifier: 'flutter${Random.secure().nextInt(1000)}',
+                  ));
+                },
+              ),
+            );
           },
         ),
       ),
