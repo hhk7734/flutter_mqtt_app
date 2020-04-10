@@ -34,16 +34,17 @@ class ServerConnectionBloc
       ServerConnectionConnected event) async* {
     switch (event.state) {
       case ServerConnectionConnectedNextState.inProgress:
+        assert(event.server != null);
+        assert(event.clientIdentifier != null);
+
         _mqttRepository.client.server = event.server;
-        _mqttRepository.client.clientIdentifier = 'flutter';
+        _mqttRepository.client.clientIdentifier = event.clientIdentifier;
         _mqttRepository.connect().then((value) {
           if (value) {
             add(ServerConnectionConnected(
-                server: event.server,
                 state: ServerConnectionConnectedNextState.success));
           } else {
             add(ServerConnectionConnected(
-                server: event.server,
                 state: ServerConnectionConnectedNextState.failure));
           }
         });
