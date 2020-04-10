@@ -34,9 +34,6 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
               return Text('Success');
             } else if (state is ServerConnectionConnectFailure) {
               return Text('Failure');
-            } else if (state
-                is ServerConnectionUnsolicitedlyDisconnectSuccess) {
-              return Text('Unsolicitedly Disconnect');
             } else {
               return Text('Initial');
             }
