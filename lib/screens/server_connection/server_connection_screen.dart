@@ -21,9 +21,11 @@ class ServerConnectionScreen extends StatefulWidget {
 
 class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
   ServerConnectionBloc _bloc;
+
   @override
   Widget build(BuildContext context) {
     _bloc = ServerConnectionBloc(mqttRepository: widget._mqttRepository);
+    final _serverTextFieldController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -49,17 +51,31 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
             }
           },
           builder: (context, state) {
-            return Center(
-              child: RaisedButton(
-                child: Text('test button to connect sever'),
-                onPressed: () {
-                  _bloc.add(ServerConnectionConnected(
-                    server: '192.168.11.11',
-                    clientIdentifier: 'flutter${Random.secure().nextInt(1000)}',
-                  ));
-                },
-              ),
-            );
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                      margin: EdgeInsets.all(4),
+                      child: Row(children: <Widget>[
+                        Flexible(
+                            child: TextField(
+                          controller: _serverTextFieldController,
+                          decoration: new InputDecoration.collapsed(
+                              hintText: "Enter your MQTT server address"),
+                        )),
+                        Container(
+                            margin: EdgeInsets.all(4),
+                            child: RaisedButton(
+                                child: Text('OK'),
+                                onPressed: () {
+                                  _bloc.add(ServerConnectionConnected(
+                                    server: _serverTextFieldController.text,
+                                    clientIdentifier:
+                                        'flutter${Random.secure().nextInt(1000)}',
+                                  ));
+                                }))
+                      ])),
+                ]);
           },
         ),
       ),
