@@ -26,6 +26,7 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
   Widget build(BuildContext context) {
     _bloc = ServerConnectionBloc(mqttRepository: widget._mqttRepository);
     final _serverTextFieldController = TextEditingController();
+    final _clientIdTextFieldController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -63,18 +64,29 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                           decoration: new InputDecoration.collapsed(
                               hintText: "Enter your MQTT server address"),
                         )),
-                        Container(
-                            margin: EdgeInsets.all(4),
-                            child: RaisedButton(
-                                child: Text('OK'),
-                                onPressed: () {
-                                  _bloc.add(ServerConnectionConnected(
-                                    server: _serverTextFieldController.text,
-                                    clientIdentifier:
-                                        'flutter${Random.secure().nextInt(1000)}',
-                                  ));
-                                }))
                       ])),
+                  Container(
+                      margin: EdgeInsets.all(4),
+                      child: Row(children: <Widget>[
+                        Flexible(
+                            child: TextField(
+                          controller: _clientIdTextFieldController,
+                          decoration: new InputDecoration.collapsed(
+                              hintText: "Enter your client identifier (Optional)"),
+                        )),
+                      ])),
+                  Container(
+                      margin: EdgeInsets.all(4),
+                      child: RaisedButton(
+                          child: Text('OK'),
+                          onPressed: () {
+                            _bloc.add(ServerConnectionConnected(
+                                server: _serverTextFieldController.text.trim(),
+                                clientIdentifier: _clientIdTextFieldController
+                                        .text.trim().isNotEmpty
+                                    ? _clientIdTextFieldController.text.trim()
+                                    : 'flutter${Random.secure().nextInt(1000)}'));
+                          }))
                 ]);
           },
         ),
