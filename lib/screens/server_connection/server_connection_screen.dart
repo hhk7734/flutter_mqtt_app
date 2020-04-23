@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../blocs/server_connection/server_connection_bloc.dart';
 import '../../repositories/mqtt/mqtt_repository.dart';
@@ -22,6 +23,8 @@ class ServerConnectionScreen extends StatefulWidget {
 class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
   ServerConnectionBloc _bloc;
 
+  _showToastMsg(String message) => Fluttertoast.showToast(msg: message);
+
   @override
   Widget build(BuildContext context) {
     _bloc = ServerConnectionBloc(mqttRepository: widget._mqttRepository);
@@ -37,8 +40,10 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
         child: BlocBuilder<ServerConnectionBloc, ServerConnectionState>(
           condition: (previous, current) {
             if (current is ServerConnectionConnectInProgress) {
+              _showToastMsg("Connecting to server...");
               return false;
             } else if (current is ServerConnectionConnectSuccess) {
+              _showToastMsg("Server connection established");
               Navigator.of(context).pushNamed(RemoteControlScreen.id).then(
                 (value) {
                   _bloc.add(ServerConnectionDisconnected());
@@ -46,6 +51,7 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
               );
               return false;
             } else if (current is ServerConnectionConnectFailure) {
+              _showToastMsg("Server connection failed");
               return false;
             } else {
               return true;
