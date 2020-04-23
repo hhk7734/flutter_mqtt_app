@@ -61,8 +61,8 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                         Flexible(
                             child: TextField(
                           controller: _serverTextFieldController,
-                          decoration: new InputDecoration.collapsed(
-                              hintText: "Enter your MQTT server address"),
+                          decoration: new InputDecoration(
+                              labelText: "Enter your MQTT server address"),
                         )),
                       ])),
                   Container(
@@ -71,8 +71,8 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                         Flexible(
                             child: TextField(
                           controller: _clientIdTextFieldController,
-                          decoration: new InputDecoration.collapsed(
-                              hintText: "Enter your client identifier (Optional)"),
+                          decoration: new InputDecoration(
+                              labelText: "Enter your client identifier (Optional)"),
                         )),
                       ])),
                   Container(
