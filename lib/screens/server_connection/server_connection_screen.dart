@@ -61,29 +61,28 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
             }
           },
           builder: (context, state) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
+            return Center(
+                child: SingleChildScrollView(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
                   Container(
-                      margin: EdgeInsets.all(4),
-                      child: Row(children: <Widget>[
-                        Flexible(
-                            child: TextField(
-                          controller: _serverTextFieldController,
-                          decoration: new InputDecoration(
-                              labelText: "MQTT server address"),
-                        )),
-                      ])),
+                    margin: EdgeInsets.all(4),
+                    child: TextField(
+                      controller: _serverTextFieldController,
+                      decoration:
+                          new InputDecoration(labelText: "MQTT server address"),
+                    ),
+                  ),
                   Container(
-                      margin: EdgeInsets.all(4),
-                      child: Row(children: <Widget>[
-                        Flexible(
-                            child: TextField(
-                          controller: _clientIdTextFieldController,
-                          decoration: new InputDecoration(
-                              labelText: "Client identifier (Optional)"),
-                        )),
-                      ])),
+                    margin: EdgeInsets.all(4),
+                    child: TextField(
+                      controller: _clientIdTextFieldController,
+                      decoration: new InputDecoration(
+                          labelText: "Client identifier (Optional)"),
+                    ),
+                  ),
                   Container(
                       margin: EdgeInsets.all(4),
                       child: RaisedButton(
@@ -92,11 +91,13 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                             _bloc.add(ServerConnectionConnected(
                                 server: _serverTextFieldController.text.trim(),
                                 clientIdentifier: _clientIdTextFieldController
-                                        .text.trim().isNotEmpty
+                                        .text
+                                        .trim()
+                                        .isNotEmpty
                                     ? _clientIdTextFieldController.text.trim()
                                     : 'flutter${Random.secure().nextInt(1000)}'));
                           }))
-                ]);
+                ])));
           },
         ),
       ),
