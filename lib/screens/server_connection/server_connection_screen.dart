@@ -23,7 +23,10 @@ class ServerConnectionScreen extends StatefulWidget {
 class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
   ServerConnectionBloc _bloc;
 
-  _showToastMsg(String message) => Fluttertoast.showToast(msg: message);
+  _showToastMsg(String message) {
+    Fluttertoast.cancel();
+    Fluttertoast.showToast(msg: message);
+  }
 
   @override
   Widget build(BuildContext context) {
