@@ -62,7 +62,7 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                             child: TextField(
                           controller: _serverTextFieldController,
                           decoration: new InputDecoration(
-                              labelText: "Enter your MQTT server address"),
+                              labelText: "MQTT server address"),
                         )),
                       ])),
                   Container(
@@ -72,7 +72,7 @@ class _ServerConnectionScreenState extends State<ServerConnectionScreen> {
                             child: TextField(
                           controller: _clientIdTextFieldController,
                           decoration: new InputDecoration(
-                              labelText: "Enter your client identifier (Optional)"),
+                              labelText: "Client identifier (Optional)"),
                         )),
                       ])),
                   Container(
